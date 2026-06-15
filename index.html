@@ -406,7 +406,8 @@ const Voice = {
         if ('speechSynthesis' in window) window.speechSynthesis.cancel();
     },
 
-    // ========== 播放指定片段（懒加载） ==========
+    // ========== 播放指定片段（懒加载 + 手机自动重试） ==========
+    _playedSilent: false,
     play(id) {
         this.stopAll();
         let a = this._cache[id];
@@ -415,7 +416,16 @@ const Voice = {
             this._cache[id] = a;
         }
         a.currentTime = 0;
-        a.play().catch(() => {});
+        a.play().catch(() => {
+            // 手机端首次播放失败：播无声 WAV 解锁后再试一次
+            if (!this._playedSilent) {
+                this._playedSilent = true;
+                try {
+                    var p = new Audio("data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQAAAAA=");
+                    p.play().then(() => { a.currentTime = 0; a.play().catch(() => {}); }).catch(() => {});
+                } catch(e) {}
+            }
+        });
     },
 
     // ========== 朗读文字（题目用——动态内容走浏览器 TTS） ==========
