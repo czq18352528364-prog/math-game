@@ -343,204 +343,137 @@
    ================================================================ */
 const Voice = {
     _base: 'audio/',
-    _cache: {},
+    _ctx: null,        // 共享 AudioContext
+    _bufCache: {},     // 缓存已解码的音频
     _lastText: '',
 
-    // ========== 预生成音频映射：id → 文件名 ==========
-    // 用法：Voice.play('p1')  → 播放 audio/p1.mp3
     _clips: {
-
-        // ── 夸奖（8句，答对随机抽） ──
-        p1: '太棒啦！你真聪明！',
-        p2: '答对咯！你好厉害呀！',
-        p3: '哇，全对！小脑袋转得真快！',
-        p4: '真了不起，一百分！',
-        p5: '又答对了，你真是小天才！',
-        p6: '好棒呀！企鹅给你拍拍手~',
-        p7: '没错！你越来越厉害了！',
-        p8: '答对啦，闪闪亮亮就是你！',
-
-        // ── 答错告知答案（3句，随机抽） ──
-        w1: '正确答案是',
-        w2: '应该是',
-        w3: '再想想，答案是',
-
-        // ── 答错后半段（通用，拼接在答案后面） ──
-        e1: '没关系，我们看看下一题吧',
-        e2: '慢慢来，下次就对啦',
-        e3: '你已经很棒了，继续加油',
-
-        // ── 结果页 ──
-        r1: '满分通关！你是最棒的数学小天才！小企鹅为你疯狂鼓掌！',
-        r2: '太厉害啦！你闯过了大部分关卡，再玩一次就能拿满分咯！',
-        r3: '不错哦！你学会了好多本领，再来一次会更好！',
-        r4: '没关系，小企鹅陪你多练几次，下次一定更棒！',
-
-        // ── 欢迎语 + 游戏提示 ──
-        welcome: '你好呀！我是小企鹅数数~今天我们要玩五个数学小游戏，准备好了吗？',
-        q_count: '数一数，下面有几个气球呀？',
-        q_compare: '哪边更多呀？点点多的那边',
-        q_compare_fewer: '哪边更少呀？点点少的那边',
-        q_len_long: '哪条更长呀？点点长的那条',
-        q_len_short: '哪条更短呀？点点短的那条',
-        q_sort: '找出不一样的那个哦',
-        q_pos: '看一看，哪个在上面呀？',
-        q_pos2: '看一看，哪个在左边呀？',
-        q_pos_bottom: '看一看，哪个在下面呀？',
-        q_pos_right: '看一看，哪个在右边呀？',
+        p1:'太棒啦！你真聪明！',p2:'答对咯！你好厉害呀！',p3:'哇，全对！小脑袋转得真快！',
+        p4:'真了不起，一百分！',p5:'又答对了，你真是小天才！',p6:'好棒呀！企鹅给你拍拍手~',
+        p7:'没错！你越来越厉害了！',p8:'答对啦，闪闪亮亮就是你！',
+        w1:'正确答案是',w2:'应该是',w3:'再想想，答案是',
+        e1:'没关系，我们看看下一题吧',e2:'慢慢来，下次就对啦',e3:'你已经很棒了，继续加油',
+        r1:'满分通关！你是最棒的数学小天才！小企鹅为你疯狂鼓掌！',
+        r2:'太厉害啦！你闯过了大部分关卡，再玩一次就能拿满分咯！',
+        r3:'不错哦！你学会了好多本领，再来一次会更好！',
+        r4:'没关系，小企鹅陪你多练几次，下次一定更棒！',
+        welcome:'你好呀！我是小企鹅数数~今天我们要玩五个数学小游戏，准备好了吗？',
+        q_count:'数一数，下面有几个气球呀？',q_compare:'哪边更多呀？点点多的那边',
+        q_compare_fewer:'哪边更少呀？点点少的那边',q_len_long:'哪条更长呀？点点长的那条',
+        q_len_short:'哪条更短呀？点点短的那条',q_sort:'找出不一样的那个哦',
+        q_pos:'看一看，哪个在上面呀？',q_pos2:'看一看，哪个在左边呀？',
+        q_pos_bottom:'看一看，哪个在下面呀？',q_pos_right:'看一看，哪个在右边呀？',
     },
 
-    // ========== 初始化：预加载音频 ==========
+    _getCtx() {
+        if (!this._ctx) this._ctx = new (window.AudioContext || window.webkitAudioContext)();
+        if (this._ctx.state === 'suspended') this._ctx.resume();
+        return this._ctx;
+    },
+
+    // 把 mp3 从服务器拉下来并解码成 AudioBuffer
+    async _load(id) {
+        if (this._bufCache[id]) return this._bufCache[id];
+        const ctx = this._getCtx();
+        const resp = await fetch(this._base + id + '.mp3');
+        const buf = await resp.arrayBuffer();
+        const audioBuf = await ctx.decodeAudioData(buf);
+        this._bufCache[id] = audioBuf;
+        return audioBuf;
+    },
+
+    // 不等待加载，后台预载（用于 init）
+    _preload(id) {
+        fetch(this._base + id + '.mp3').then(r => r.arrayBuffer()).then(b => {
+            if (!this._bufCache[id] && this._ctx) {
+                this._ctx.decodeAudioData(b).then(ab => { this._bufCache[id] = ab; }).catch(()=>{});
+            }
+        }).catch(()=>{});
+    },
+
+    // ========== 初始化：后台开始预下载所有 mp3 ==========
     init() {
-        Object.keys(this._clips).forEach(id => {
-            const a = new Audio();
-            a.preload = 'auto';
-            a.src = this._base + id + '.mp3';
-            this._cache[id] = a;
-        });
+        Object.keys(this._clips).forEach(id => this._preload(id));
     },
 
-    // 停止所有正在播放的语音
+    // 停止所有正在播放的语音（不关闭 AudioContext，保持解锁状态）
     stopAll() {
-        Object.values(this._cache).forEach(a => { try { a.pause(); a.currentTime = 0; } catch(e) {} });
+        try { if (this._currentSrc) { this._currentSrc.stop(); this._currentSrc = null; } } catch(e) {}
         if ('speechSynthesis' in window) window.speechSynthesis.cancel();
     },
 
-    // ========== 播放指定片段（懒加载 + 手机自动重试） ==========
-    _playedSilent: false,
+    // ========== 播放指定片段（用 AudioContext 播，手机兼容） ==========
+    _currentSrc: null,  // 正在播的 source 引用
     play(id) {
         this.stopAll();
-        let a = this._cache[id];
-        if (!a) {
-            a = new Audio(); a.preload = 'auto'; a.src = this._base + id + '.mp3';
-            this._cache[id] = a;
+        const ctx = this._getCtx();
+        const buf = this._bufCache[id];
+        if (buf) {
+            const src = ctx.createBufferSource();
+            src.buffer = buf;
+            src.connect(ctx.destination);
+            src.start(0);
+            this._currentSrc = src;
+            return this._promiseSource(src);
         }
-        a.currentTime = 0;
-        a.play().catch(() => {
-            // 手机端首次播放失败：播无声 WAV 解锁后再试一次
-            if (!this._playedSilent) {
-                this._playedSilent = true;
-                try {
-                    var p = new Audio("data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQAAAAA=");
-                    p.play().then(() => { a.currentTime = 0; a.play().catch(() => {}); }).catch(() => {});
-                } catch(e) {}
-            }
-        });
+        // 还没加载完 → 直接加载再播
+        return this._load(id).then(buf => this.play(id));
     },
 
-    // ========== 朗读文字（题目用——动态内容走浏览器 TTS） ==========
+    // 返回 promise，source 播完或超时（5秒）时 resolve
+    _promiseSource(src) {
+        let done = false, resolve;
+        const ok = () => { if (!done) { done = true; if (resolve) resolve(); } };
+        return new Promise(r => { resolve = r; src.onended = ok; setTimeout(ok, 5000); });
+    },
+
+    // ========== 朗读文字（题目用——动态内容走 TTS） ==========
     speak(text) {
         if (!text || text.trim() === '') return;
         const clean = text.replace(/[\u{1F600}-\u{1F9FF}\u{2600}-\u{27BF}\u{1F300}-\u{1F5FF}\u{1F680}-\u{1F6FF}\u{1F900}-\u{1F9FF}\u{200D}\u{FE0F}]/gu, '').replace(/\s+/g, ' ').trim();
         if (!clean) return;
         this._lastText = clean;
-
         if (!('speechSynthesis' in window)) return;
         window.speechSynthesis.cancel();
-
         const u = new SpeechSynthesisUtterance(clean);
-        u.lang = 'zh-CN';
-        u.rate = 0.9;
-        u.pitch = 1.2;
-        u.volume = 1;
+        u.lang='zh-CN'; u.rate=0.9; u.pitch=1.2; u.volume=1;
         const voices = window.speechSynthesis.getVoices();
-        const zh = voices.find(v => /huihui|female|girl|yaoyao/i.test(v.name) && v.lang.startsWith('zh')) ||
-                   voices.find(v => v.lang.startsWith('zh'));
+        const zh = voices.find(v => /huihui|female|girl|yaoyao/i.test(v.name) && v.lang.startsWith('zh')) || voices.find(v => v.lang.startsWith('zh'));
         if (zh) u.voice = zh;
         window.speechSynthesis.speak(u);
     },
 
-    // ========== 答对 → 随机播夸奖 mp3 + 返回对应文字 ==========
+    // ========== 答对 → 随机夸奖 ==========
     praise(onDone) {
-        const n = Math.floor(Math.random() * 8) + 1;
-        const txt = this._clips['p' + n] || '';
-        const a = this._cache['p' + n];
-        if (a && a.duration > 0) {
-            a.currentTime = 0;
-            a.onended = () => { if (onDone) onDone(txt); };
-            a.play().catch(() => {
-                if (onDone) setTimeout(() => onDone(txt), 500);
-            });
-        } else {
-            if (onDone) setTimeout(() => onDone(txt), 500);
-        }
+        const n = Math.floor(Math.random()*8)+1;
+        const txt = this._clips['p'+n] || '';
+        this.play('p'+n).then(() => { if (onDone) onDone(txt); }).catch(() => { if (onDone) setTimeout(() => onDone(txt), 500); });
     },
 
-    // ========== 答错 → wX.mp3 → 答案 → eX.mp3（有mp3用mp3，没有用TTS兜底） ==========
+    // ========== 答错 → 链式播放 ==========
     correctHint(correctAns, onDone) {
-        const wi = Math.floor(Math.random() * 3) + 1;
-        const ei = Math.floor(Math.random() * 3) + 1;
-        const aW = this._ensureLoaded('w' + wi);
-        const aE = this._ensureLoaded('e' + ei);
+        const wi = Math.floor(Math.random()*3)+1, ei = Math.floor(Math.random()*3)+1;
+        const aW = 'w'+wi, aE = 'e'+ei;
         const ansId = this._ansToId(correctAns);
-        const aAns = ansId ? this._ensureLoaded(ansId) : null;
+        const chain = [aW, ansId, aE].filter(Boolean);
         const done = () => { if (onDone) onDone(); };
-
-        // 如果答案有对应 mp3 → 纯 MP3 链播放
-        if (aAns) {
-            const list = [aW, aAns, aE].filter(Boolean);
-            const playNext = (idx) => {
-                if (idx >= list.length) { done(); return; }
-                const a = list[idx]; if (!a) { playNext(idx + 1); return; }
-                a.currentTime = 0; a.onended = () => playNext(idx + 1);
-                a.onerror = () => playNext(idx + 1);
-                a.play().catch(() => playNext(idx + 1));
-            };
-            playNext(0);
-            return;
-        }
-
-        // 没有对应 mp3 → w.mp3 + TTS 答案 + e.mp3
-        if (aW) {
-            aW.currentTime = 0;
-            aW.onended = () => {
-                if ('speechSynthesis' in window) {
-                    window.speechSynthesis.cancel();
-                    const u = new SpeechSynthesisUtterance(String(correctAns));
-                    u.lang = 'zh-CN'; u.rate = 0.85; u.pitch = 1.2; u.volume = 1;
-                    const voices = window.speechSynthesis.getVoices();
-                    const zh = voices.find(v => /huihui|female|girl|yaoyao/i.test(v.name) && v.lang.startsWith('zh')) ||
-                               voices.find(v => v.lang.startsWith('zh'));
-                    if (zh) u.voice = zh;
-                    u.onend = () => { if (aE) { aE.currentTime = 0; aE.onended = done; aE.play().catch(done); } else done(); };
-                    u.onerror = () => { if (aE) { aE.currentTime = 0; aE.onended = done; aE.play().catch(done); } else done(); };
-                    window.speechSynthesis.speak(u);
-                } else {
-                    if (aE) { aE.currentTime = 0; aE.onended = done; aE.play().catch(done); } else done();
-                }
-            };
-            aW.play().catch(() => done());
-        } else {
-            setTimeout(done, 1000);
-        }
+        const playChain = (idx) => {
+            if (idx >= chain.length) { done(); return; }
+            this.play(chain[idx]).then(() => playChain(idx+1)).catch(() => playChain(idx+1));
+        };
+        if (chain.length) playChain(0);
+        else done();
     },
 
     // 答案文本 → mp3 编号映射
     _ansToId(ans) {
         const s = String(ans).trim();
-        // 数字 3-20
-        if (/^\d+$/.test(s) && +s >= 3 && +s <= 20) return 'n' + s;
-        // 方向词
-        const dirMap = { '上面':'d_top', '下面':'d_bottom', '左边':'d_left', '右边':'d_right',
-                         '更多':'d_more', '更少':'d_fewer', '更长':'d_long', '更短':'d_short',
-                         '左边更多':'d_left', '右边更多':'d_right', '上面那条':'d_top', '下面那条':'d_bottom',
-                         '上面':'d_top', '下面':'d_bottom', '左边':'d_left', '右边':'d_right',
-                         };
-        for (const [k, v] of Object.entries(dirMap)) {
-            if (s.includes(k)) return v;
-        }
-        // 找位置游戏：emoji 名字
-        const nameMap = { '小鸟':'s_bird', '小鱼':'s_fish', '小猫':'s_cat', '小狗':'s_dog' };
+        if (/^\d+$/.test(s) && +s >= 3 && +s <= 20) return 'n'+s;
+        const dirMap = { '上面':'d_top','下面':'d_bottom','左边':'d_left','右边':'d_right','更多':'d_more','更少':'d_fewer','更长':'d_long','更短':'d_short','左边更多':'d_left','右边更多':'d_right','上面那条':'d_top','下面那条':'d_bottom' };
+        for (const [k,v] of Object.entries(dirMap)) { if (s.includes(k)) return v; }
+        const nameMap = { '小鸟':'s_bird','小鱼':'s_fish','小猫':'s_cat','小狗':'s_dog' };
         if (nameMap[s]) return nameMap[s];
         return null;
-    },
-
-    _ensureLoaded(id) {
-        if (!this._cache[id]) {
-            const a = new Audio(); a.preload = 'auto'; a.src = this._base + id + '.mp3';
-            this._cache[id] = a;
-        }
-        return this._cache[id];
     },
 
     // 重新读题
@@ -553,10 +486,10 @@ const Voice = {
     // 播放结果页语音
     resultSpeak(pct) {
         let id = 'r4';
-        if (pct >= 100) id = 'r1';        // 满分
-        else if (pct >= 70) id = 'r2';    // 太厉害啦
-        else if (pct >= 40) id = 'r3';    // 不错哦
-        this.play(id);
+        if (pct >= 100) id = 'r1';
+        else if (pct >= 70) id = 'r2';
+        else if (pct >= 40) id = 'r3';
+        this.play(id).catch(()=>{});
     },
 };
 
@@ -650,20 +583,15 @@ const Game = {
         "已经很棒了，再看看答案吧~",
     ],
 
-    // ========== 启动（播完欢迎语再进游戏，最多等8秒） ==========
+    // ========== 启动 ==========
     start() {
         this.score = 0; this.curIdx = 0; this._jumping = false;
-        // 手机/安卓音频解锁：播放一段无声 WAV 唤醒音频系统（必须在用户手势内执行）
-        try { new Audio("data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQAAAAA=").play(); } catch(e) {}
         // 构建题库
         try { this._build(); } catch(e) { this.rounds = this._create.safeFallback(10); }
-        // 播欢迎语，播完等2秒
+        // 播欢迎语 → 播完等2秒 → 进游戏
         const go = () => { _show('scGame'); this._render(); };
-        try {
-            const a = Voice._cache['welcome'];
-            if (a) { a.currentTime = 0; a.onended = () => setTimeout(go, 2000); a.play().catch(() => setTimeout(go, 7000)); }
-            else setTimeout(go, 1000);
-        } catch(e) { setTimeout(go, 1000); }
+        Voice.play('welcome').then(() => setTimeout(go, 2000)).catch(() => setTimeout(go, 2000));
+        // 安全兜底：8秒必进
         setTimeout(go, 8000);
     },
     home() { _show('scWelcome'); },
