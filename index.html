@@ -643,6 +643,8 @@ const Game = {
     // ========== 启动（播完欢迎语再进游戏，最多等8秒） ==========
     start() {
         this.score = 0; this.curIdx = 0; this._jumping = false;
+        // 手机音频解锁：播放一个无声的 AudioContext 样本（必须在用户手势内执行）
+        try { var u = new (window.AudioContext||window.webkitAudioContext)(); var s = u.createBuffer(1,1,22050); var n = u.createBufferSource(); n.buffer = s; n.connect(u.destination); n.start(0); } catch(e) {}
         // 构建题库
         try { this._build(); } catch(e) { this.rounds = this._create.safeFallback(10); }
         // 播欢迎语，播完等2秒
