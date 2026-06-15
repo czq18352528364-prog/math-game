@@ -11,7 +11,7 @@ body{min-height:100vh;background:#f0fff0;display:flex;justify-content:center;ali
 .container::after{content:"小数工具铺";position:absolute;bottom:8px;right:12px;font-size:12px;color:#ddd;pointer-events:none;z-index:0;}
 .screen{display:none;flex-direction:column;align-items:center;gap:16px;}
 .screen.active{display:flex;}
-.game-title{font-size:32px;color:#ff7e5f;text-align:center;text-shadow:2px 2px 4px #ffe0d6;margin-bottom:4px;}
+.game-title{font-size:32px;color:#7ec850;text-align:center;text-shadow:2px 2px 4px #e0f0d0;margin-bottom:4px;}
 .sub-title{font-size:16px;color:#999;text-align:center;margin-bottom:8px;}
 .progress-wrap{width:100%;max-width:580px;}
 .progress-bar{width:100%;height:8px;background:#e8e8e8;border-radius:4px;overflow:hidden;}
@@ -57,21 +57,24 @@ body{min-height:100vh;background:#f0fff0;display:flex;justify-content:center;ali
 .click-group.shake{border-color:#ff6b6b;background:#fff0f0;animation:shake 0.4s;}
 .click-group.highlight{border-color:#4cd964;background:#f0fff4;}
 .click-group.disabled{pointer-events:none;opacity:0.55;animation:none;}
-.animal-grid{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;padding:10px;}
-.animal{font-size:40px;animation:floatAnim 2s ease-in-out infinite;}
-.animal:nth-child(1){animation-delay:0s;}
-.animal:nth-child(2){animation-delay:0.2s;}
-.animal:nth-child(3){animation-delay:0.4s;}
-.animal:nth-child(4){animation-delay:0.1s;}
-.animal:nth-child(5){animation-delay:0.3s;}
-.animal:nth-child(6){animation-delay:0.5s;}
+.items-grid{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;padding:10px;}
+.item-farm{font-size:40px;animation:floatAnim 2s ease-in-out infinite;display:inline-block;}
+.item-farm:nth-child(1){animation-delay:0s;}
+.item-farm:nth-child(2){animation-delay:0.2s;}
+.item-farm:nth-child(3){animation-delay:0.4s;}
+.item-farm:nth-child(4){animation-delay:0.1s;}
+.item-farm:nth-child(5){animation-delay:0.3s;}
+.item-farm:nth-child(6){animation-delay:0.5s;}
+.math-display{font-size:28px;padding:12px;text-align:center;line-height:1.8;}
+.math-display .num-highlight{color:#f9a825;font-weight:bold;font-size:32px;}
+.eq-big{font-size:36px;font-weight:bold;color:#ff7e5f;}
 .welcome-decor{font-size:48px;text-align:center;margin:4px 0;}
 .result-stars{display:flex;gap:8px;margin:12px 0;}
 .result-star{font-size:52px;animation:popIn 0.4s ease backwards;}
 .result-star:nth-child(1){animation-delay:0.1s;}
 .result-star:nth-child(2){animation-delay:0.25s;}
 .result-star:nth-child(3){animation-delay:0.4s;}
-.result-score{font-size:48px;color:#ff7e5f;font-weight:bold;}
+.result-score{font-size:48px;color:#7ec850;font-weight:bold;}
 .confetti-box{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:999;}
 .confetti-piece{position:absolute;width:10px;height:10px;border-radius:2px;animation:confettiDrop 3s ease-in forwards;}
 @keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
@@ -83,7 +86,7 @@ body{min-height:100vh;background:#f0fff0;display:flex;justify-content:center;ali
 .game-card{width:100px;padding:12px 6px;border-radius:14px;background:#fafff5;border:2px solid #d4edc9;text-align:center;cursor:default;}
 .game-card .icon{font-size:34px;}
 .game-card .name{font-size:13px;color:#666;margin-top:4px;}
-@media(max-width:480px){.container{padding:16px;border-radius:16px;}.game-title{font-size:24px;}.mascot-avatar{width:48px;height:48px;font-size:30px;}.mascot-speech{font-size:15px;}.animal{font-size:32px;}.choice-btn{width:64px;min-height:70px;}.choice-btn .num{font-size:24px;}.click-group{padding:12px 16px;}.click-group .hint{font-size:14px;}.result-score{font-size:36px;}}
+@media(max-width:480px){.container{padding:16px;border-radius:16px;}.game-title{font-size:24px;}.mascot-avatar{width:48px;height:48px;font-size:30px;}.mascot-speech{font-size:15px;}.item-farm{font-size:32px;}.choice-btn{width:64px;min-height:70px;}.choice-btn .num{font-size:24px;}.click-group{padding:12px 16px;}.click-group .hint{font-size:14px;}.result-score{font-size:36px;}}
 .copyright{font-size:12px;color:#ddd;margin-top:12px;text-align:center;}
 </style>
 </head>
@@ -97,10 +100,7 @@ body{min-height:100vh;background:#f0fff0;display:flex;justify-content:center;ali
 <div class="sub-title">和小鸡"咕咕"一起认识0~5吧！</div>
 <div class="mascot-area">
 <div class="mascot-avatar mascot-chicken">🐥</div>
-<div class="mascot-speech">
-你好呀！我是小鸡 <span class="hl">咕咕</span> ~<br>
-今天我们来认识 <span class="hl">5 个</span> 数字小游戏，准备好了吗？
-</div>
+<div class="mascot-speech">你好呀！我是小鸡 <span class="hl">咕咕</span> ~<br>今天我们来认识 <span class="hl">5 个</span> 数字小游戏，准备好了吗？</div>
 </div>
 <div class="game-cards">
 <div class="game-card"><div class="icon">🔢</div><div class="name">数一数</div></div>
@@ -144,11 +144,11 @@ body{min-height:100vh;background:#f0fff0;display:flex;justify-content:center;ali
 </div>
 <script>
 /* ================================================================
-   模块 0：语音引擎（同第一课，共享 audio/ 目录）
+   模块 0：语音引擎
    ================================================================ */
 const Voice = {
     _base:'audio/',_ctx:null,_bufCache:{},_lastText:'',
-    _clips:{p1:'太棒啦！你真聪明！',p2:'答对咯！你好厉害呀！',p3:'哇，全对！小脑袋转得真快！',p4:'真了不起，一百分！',p5:'又答对了，你真是小天才！',p6:'好棒呀！企鹅给你拍拍手~',p7:'没错！你越来越厉害了！',p8:'答对啦，闪闪亮亮就是你！',w1:'正确答案是',w2:'应该是',w3:'再想想，答案是',e1:'没关系，我们看看下一题吧',e2:'慢慢来，下次就对啦',e3:'你已经很棒了，继续加油',r1:'满分通关！你是最棒的数学小天才！小企鹅为你疯狂鼓掌！',r2:'太厉害啦！你闯过了大部分关卡，再玩一次就能拿满分咯！',r3:'不错哦！你学会了好多本领，再来一次会更好！',r4:'没关系，小企鹅陪你多练几次，下次一定更棒！',welcome2:'欢迎来到数字小农场！我是小鸡咕咕，今天我们一起来认识零到五吧！',q2_count:'数一数，农场里有多少呀？',q2_compare:'哪边更多呀？',q2_add:'加一加，一共是多少？',q2_sub:'减一减，还剩多少？',q2_num:'找一找，哪个是？'},
+    _clips:{p1:'太棒啦！你真聪明！',p2:'答对咯！你好厉害呀！',p3:'哇，全对！小脑袋转得真快！',p4:'真了不起，一百分！',p5:'又答对了，你真是小天才！',p6:'好棒呀！企鹅给你拍拍手~',p7:'没错！你越来越厉害了！',p8:'答对啦，闪闪亮亮就是你！',w1:'正确答案是',w2:'应该是',w3:'再想想，答案是',e1:'没关系，我们看看下一题吧',e2:'慢慢来，下次就对啦',e3:'你已经很棒了，继续加油',r1:'满分通关！你是最棒的数学小天才！小鸡咕咕为你疯狂鼓掌！',r2:'太厉害啦！你闯过了大部分关卡，再玩一次就能拿满分咯！',r3:'不错哦！你学会了好多本领，再来一次会更好！',r4:'没关系，小鸡咕咕陪你多练几次，下次一定更棒！',welcome2:'欢迎来到数字小农场！我是小鸡咕咕，今天我们一起来认识零到五吧！',q2_count:'数一数，农场里有多少呀？',q2_compare:'哪边更多呀？',q2_add:'加一加，一共是多少？',q2_sub:'减一减，还剩多少？',q2_num:'找一找，哪个是这个数字？'},
     _getCtx(){if(!this._ctx)this._ctx=new(window.AudioContext||window.webkitAudioContext)();if(this._ctx.state==='suspended')this._ctx.resume();return this._ctx;},
     async _load(id){if(this._bufCache[id])return this._bufCache[id];const ctx=this._getCtx();const resp=await fetch(this._base+id+'.mp3');const buf=await resp.arrayBuffer();const audioBuf=await ctx.decodeAudioData(buf);this._bufCache[id]=audioBuf;return audioBuf;},
     _preload(id){fetch(this._base+id+'.mp3').then(r=>r.arrayBuffer()).then(b=>{if(!this._bufCache[id]&&this._ctx){this._ctx.decodeAudioData(b).then(ab=>{this._bufCache[id]=ab}).catch(()=>{});}}).catch(()=>{});},
@@ -158,7 +158,7 @@ const Voice = {
     speak(text){if(!text||text.trim()==='')return;const clean=text.replace(/[\u{1F600}-\u{1F9FF}\u{2600}-\u{27BF}\u{1F300}-\u{1F5FF}\u{1F680}-\u{1F6FF}\u{1F900}-\u{1F9FF}\u{200D}\u{FE0F}]/gu,'').replace(/\s+/g,' ').trim();if(!clean)return;this._lastText=clean;if(!('speechSynthesis' in window))return;window.speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(clean);u.lang='zh-CN';u.rate=0.9;u.pitch=1.2;u.volume=1;const voices=window.speechSynthesis.getVoices();const zh=voices.find(v=>/huihui|female|girl|yaoyao/i.test(v.name)&&v.lang.startsWith('zh'))||voices.find(v=>v.lang.startsWith('zh'));if(zh)u.voice=zh;window.speechSynthesis.speak(u);},
     praise(onDone){const n=Math.floor(Math.random()*8)+1;const txt=this._clips['p'+n]||'';this.play('p'+n).then(()=>{if(onDone)onDone(txt);}).catch(()=>{if(onDone)setTimeout(()=>onDone(txt),500);});},
     correctHint(correctAns,onDone){const wi=Math.floor(Math.random()*3)+1,ei=Math.floor(Math.random()*3)+1;const aW='w'+wi,aE='e'+ei;const ansId=this._ansToId(correctAns);const chain=[aW,ansId,aE].filter(Boolean);const done=()=>{if(onDone)onDone();};const playChain=(idx)=>{if(idx>=chain.length){done();return;}this.play(chain[idx]).then(()=>playChain(idx+1)).catch(()=>playChain(idx+1));};if(chain.length)playChain(0);else done();},
-    _ansToId(ans){const s=String(ans).trim();if(/^\d+$/.test(s)&&+s>=0&&+s<=20){if(+s>=3)return'n'+s;const m={'0':'n0','1':'n1','2':'n2'};return m[s];}return null;},
+    _ansToId(ans){const s=String(ans).trim();if(/^\d+$/.test(s)&&+s>=0&&+s<=20){if(+s>=3)return'n'+s;return{'0':'n0','1':'n1','2':'n2'}[s];}return null;},
     replay(){const rd=Game.rounds[Game.curIdx];if(rd&&rd.voice)this.play(rd.voice);else if(this._lastText)this.speak(this._lastText);},
     resultSpeak(pct){let id='r4';if(pct>=100)id='r1';else if(pct>=70)id='r2';else if(pct>=40)id='r3';this.play(id).catch(()=>{});},
 };
@@ -176,49 +176,39 @@ click(){this._tone(880,0.08,'sine',0.06);},};
    模块 2：核心游戏
    ================================================================ */
 const Game={TOTAL:10,rounds:[],curIdx:0,score:0,answered:false,_timer:null,_jumping:false,
-
 start(){this.score=0;this.curIdx=0;this._jumping=false;try{this._build();}catch(e){this.rounds=this._create.safeFallback(10);}
-const go=()=>{_show('scGame');this._render();};
-Voice.play('welcome2').then(()=>setTimeout(go,2000)).catch(()=>setTimeout(go,2000));
-setTimeout(go,8000);},
-home(){_show('scWelcome');},
-
+const go=()=>{_show('scGame');this._render();};Voice.play('welcome2').then(()=>setTimeout(go,2000)).catch(()=>setTimeout(go,2000));setTimeout(go,8000);},
 _build(){const R=this._create;const gen=(fn)=>{try{var a=fn.call(R,2);if(a.length>=2)return a;}catch(e){}return R.safeFallback(2);};
 const pools={count:gen(R.counting),compare:gen(R.comparing),add:gen(R.adding),sub:gen(R.subtracting),num:gen(R.numberId)};
 const types=['count','compare','add','sub','num'];function sh(arr){for(let i=arr.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]];}return arr;}
 const a=sh([...types]);const b=sh([...types]);if(b[0]===a[4]){const t=b[0];b[0]=b[1];b[1]=t;}
 this.rounds=[...a,...b].map(t=>pools[t].shift());},
-
-_create:{safeFallback(n){const arr=[];for(let i=0;i<n;i++){const cnt=(i%6);arr.push({type:'count',voice:'q2_count',q:'🐑 数一数，农场里有多少？',ans:cnt,
-render(area){area.innerHTML=`<div class="animal-grid" id="anGrid"></div><div class="choices" id="anChoices"></div>`;
-const grid=document.getElementById('anGrid');const animals=['🐑','🐥','🐤','🐄','🐖','🐇'];for(let j=0;j<cnt;j++){const s=document.createElement('span');s.className='animal';s.textContent=animals[j%animals.length];grid.appendChild(s);}
-const opts=new Set([cnt]);while(opts.size<5)opts.add(_rand(Math.max(0,cnt-3),cnt+3));const div=document.getElementById('anChoices');
-[...opts].sort(()=>Math.random()-0.5).forEach(n=>{const b=document.createElement('button');b.className='choice-btn';b.innerHTML=`<span class="num">${n}</span>`;b.onclick=()=>Game._judge(b,n===cnt);div.appendChild(b);});},ans:cnt,});}return arr;},
-counting(n){const counts=[0,1,2,3,4,5].sort(()=>Math.random()-0.5).slice(0,n);return counts.map(cnt=>({type:'count',voice:'q2_count',q:'🐑 数一数，农场里有多少？',ans:cnt,
-render(area){area.innerHTML=`<div class="animal-grid" id="anGrid"></div><div class="choices" id="anChoices"></div>`;
-const grid=document.getElementById('anGrid');const animals=['🐑','🐥','🐤','🐄','🐖','🐇'];for(let j=0;j<cnt;j++){const s=document.createElement('span');s.className='animal';s.textContent=animals[j%animals.length];grid.appendChild(s);}
-const opts=new Set([cnt]);while(opts.size<5)opts.add(_rand(Math.max(0,cnt-3),cnt+3));const div=document.getElementById('anChoices');
-[...opts].sort(()=>Math.random()-0.5).forEach(n=>{const b=document.createElement('button');b.className='choice-btn';b.innerHTML=`<span class="num">${n}</span>`;b.onclick=()=>Game._judge(b,n===cnt);div.appendChild(b);});},ans:cnt,}));},
+_create:{safeFallback(n){const arr=[];for(let i=0;i<n;i++){const cnt=i%6;arr.push({type:'count',voice:'q2_count',q:'🐑 数一数，农场里有多少？',ans:cnt,render(area){Game._renderGrid(area,cnt);}});}return arr;},
+counting(n){const counts=[0,1,2,3,4,5].sort(()=>Math.random()-0.5).slice(0,n);return counts.map(cnt=>({type:'count',voice:'q2_count',q:'🐑 数一数，农场里有多少？',render(area){Game._renderGrid(area,cnt);},ans:cnt}));},
 comparing(n){const ps=[];for(let i=0;i<n;i++){let l=_rand(0,5),r=_rand(0,5);while(r===l)r=_rand(0,5);ps.push({l,r,more:l>r?'left':'right',askFewer:i===1});}
 return ps.map(p=>{const correct=p.askFewer?(p.more==='left'?'right':'left'):p.more;return{type:'compare',voice:'q2_compare',q:p.askFewer?'⚖️ 哪边更少？点一点':'⚖️ 哪边更多？点一点',correct:correct,
-render(area){area.innerHTML=`<div style="font-size:20px;font-weight:bold;color:#555;">${p.askFewer?'⚖️ 哪边更少？点一点👇':'⚖️ 哪边更多？点一点👇'}</div><div style="display:flex;flex-direction:row;gap:16px;justify-content:center;align-items:flex-start;"><div class="click-group" data-correct="${correct==='left'}" id="gL"><div style="display:flex;flex-wrap:wrap;gap:6px;justify-content:center;min-width:50px;" id="lGrid"></div><span class="hint">👈 左边</span></div><div style="font-size:36px;color:#ddd;align-self:center;">VS</div><div class="click-group" data-correct="${correct==='right'}" id="gR"><div style="display:flex;flex-wrap:wrap;gap:6px;justify-content:center;min-width:50px;" id="rGrid"></div><span class="hint">👉 右边</span></div></div>`;
-const animals=['🐑','🐥','🐤','🐄'];['lGrid','rGrid'].forEach((id,i)=>{const g=document.getElementById(id);const cnt=i===0?p.l:p.r;for(let j=0;j<cnt;j++){const s=document.createElement('span');s.style.fontSize='30px';s.textContent=animals[j%animals.length];g.appendChild(s);}});
+render(area){const animals=['🐑','🐥'];area.innerHTML='<div style="display:flex;flex-direction:row;gap:16px;justify-content:center;align-items:flex-start;"><div class="click-group" data-correct="'+(correct==='left')+'" id="gL"><div class="items-grid" id="lGrid"></div><span class="hint">👈 左边</span></div><div style="font-size:36px;color:#ddd;align-self:center;">VS</div><div class="click-group" data-correct="'+(correct==='right')+'" id="gR"><div class="items-grid" id="rGrid"></div><span class="hint">👉 右边</span></div></div>';
+['lGrid','rGrid'].forEach((id,i)=>{const g=document.getElementById(id);const cnt=i===0?p.l:p.r;for(let j=0;j<cnt;j++){const s=document.createElement('span');s.className='item-farm';s.textContent=animals[i];g.appendChild(s);}});
 document.getElementById('gL').onclick=()=>Game._judgeDirect('gL',correct==='left');document.getElementById('gR').onclick=()=>Game._judgeDirect('gR',correct==='right');},ans:correct,};});},
-adding(n){const qs=[];for(let i=0;i<n;i++){let a=_rand(0,4),b=_rand(0,4);while(a+b>5||a===0&&b===0){a=_rand(0,4);b=_rand(0,4);}qs.push({a,b,sum:a+b});}
-return qs.map(q=>({type:'add',voice:'q2_add',q:'➕ 加一加，一共是多少？',ans:q.sum,
-render(area){const aEmoji=['','🐑','🐑🐑','🐑🐑🐑','🐑🐑🐑🐑','🐑🐑🐑🐑🐑'][q.a];const bEmoji=['','🐥','🐥🐥','🐥🐥🐥','🐥🐥🐥🐥','🐥🐥🐥🐥🐥'][q.b];
-area.innerHTML=`<div style="font-size:20px;font-weight:bold;color:#555;">➕ ${q.a} + ${q.b} = ？</div><div style="font-size:28px;padding:10px;">${aEmoji} + ${bEmoji} = ？</div><div class="choices" id="addChoices"></div>`;
-const opts=new Set([q.sum]);const range=[0,1,2,3,4,5].filter(n=>n!==q.sum);const shuffled=range.sort(()=>Math.random()-0.5);while(opts.size<5)opts.add(shuffled[opts.size-1]);const div=document.getElementById('addChoices');
-[...opts].sort(()=>Math.random()-0.5).forEach(n=>{const b=document.createElement('button');b.className='choice-btn';b.innerHTML=`<span class="num">${n}</span>`;b.onclick=()=>Game._judge(b,n===q.sum);div.appendChild(b);});},ans:q.sum,}));},
-subtracting(n){const qs=[];for(let i=0;i<n;i++){let a=_rand(2,5),b=_rand(1,a);while(a-b<0){a=_rand(2,5);b=_rand(1,a);}qs.push({a,b,res:a-b});}
-return qs.map(q=>({type:'sub',voice:'q2_sub',q:'➖ 减一减，还剩多少？',ans:q.res,
-render(area){const aEmoji=['','🐑','🐑🐑','🐑🐑🐑','🐑🐑🐑🐑','🐑🐑🐑🐑🐑'][q.a];area.innerHTML=`<div style="font-size:20px;font-weight:bold;color:#555;">➖ ${q.a} - ${q.b} = ？</div><div style="font-size:28px;padding:10px;">${aEmoji} - ${q.b} = ？</div><div class="choices" id="subChoices"></div>`;
-const opts=new Set([q.res]);const range=[0,1,2,3,4,5].filter(n=>n!==q.res);const shuffled=range.sort(()=>Math.random()-0.5);while(opts.size<5)opts.add(shuffled[opts.size-1]);const div=document.getElementById('subChoices');
-[...opts].sort(()=>Math.random()-0.5).forEach(n=>{const b=document.createElement('button');b.className='choice-btn';b.innerHTML=`<span class="num">${n}</span>`;b.onclick=()=>Game._judge(b,n===q.res);div.appendChild(b);});},ans:q.res,}));},
-numberId(n){const nums=[0,1,2,3,4,5].sort(()=>Math.random()-0.5).slice(0,n);return nums.map(target=>({type:'num',voice:'q2_num',q:'🔍 找一找，哪个是 '+target+'？',ans:target,
-render(area){area.innerHTML=`<div style="font-size:20px;font-weight:bold;color:#555;">🔍 找一找，数字 ${target} 在哪里？</div><div class="choices" id="numChoices"></div>`;
-const opts=new Set([target]);const range=[0,1,2,3,4,5].filter(n=>n!==target);const shuffled=range.sort(()=>Math.random()-0.5);while(opts.size<5)opts.add(shuffled[opts.size-1]);const div=document.getElementById('numChoices');
-[...opts].sort(()=>Math.random()-0.5).forEach(n=>{const b=document.createElement('button');b.className='choice-btn';b.innerHTML=`<span class="num">${n}</span>`;b.onclick=()=>Game._judge(b,n===target);div.appendChild(b);});},ans:target,}));},},
+adding(n){const qs=[];for(let i=0;i<n;i++){let a=_rand(0,5),b=_rand(0,5);while(a+b<1||a+b>5){a=_rand(0,5);b=_rand(0,5);}qs.push({a,b,sum:a+b});}
+return qs.map(q=>({type:'add',voice:'q2_add',q:'➕ '+q.a+' + '+q.b+' = ？',ans:q.sum,
+render(area){const emoji='🍎'.repeat(q.a);const emoji2='🍎'.repeat(q.b);const total='🍎'.repeat(q.sum);
+area.innerHTML='<div style="text-align:center;padding:12px;"><div class="math-display">'+q.a+' + '+q.b+' = <span class="eq-big">？</span></div><div style="font-size:30px;padding:8px;">'+emoji+'  +  '+emoji2+'</div><div style="font-size:16px;color:#999;">合起来是👇</div><div style="font-size:32px;padding:8px;">'+total+'</div></div>';
+Game._renderChoices(area,q.sum);},ans:q.sum}));},
+subtracting(n){const qs=[];for(let i=0;i<n;i++){let a=_rand(2,5),b=_rand(1,a);qs.push({a,b,res:a-b});}
+return qs.map(q=>({type:'sub',voice:'q2_sub',q:'➖ '+q.a+' - '+q.b+' = ？',ans:q.res,
+render(area){const emoji='🍎'.repeat(q.a);const keep='🍎'.repeat(q.res);
+area.innerHTML='<div style="text-align:center;padding:12px;"><div class="math-display">'+q.a+' - '+q.b+' = <span class="eq-big">？</span></div><div style="font-size:30px;padding:8px;">'+emoji+'</div><div style="font-size:16px;color:#f44336;">去掉 '+q.b+' 个👇</div><div style="font-size:32px;padding:8px;">'+keep+'</div></div>';
+Game._renderChoices(area,q.res);},ans:q.res}));},
+numberId(n){const nums=[0,1,2,3,4,5].sort(()=>Math.random()-0.5).slice(0,n);return nums.map(target=>({type:'num',voice:'q2_num',q:'🔍 找一找，数字 '+target+' 在哪里？',ans:target,
+render(area){area.innerHTML='<div style="font-size:20px;font-weight:bold;color:#555;">🔍 找一找，数字 '+target+' 在哪里？</div>';Game._renderChoices(area,target);},ans:target}));},},
+
+_renderGrid(area,cnt){area.innerHTML='<div class="items-grid" id="fgrid"></div>';const grid=document.getElementById('fgrid');const animals=['🐑','🐥','🐤','🐄','🐖','🐇'];for(let j=0;j<cnt;j++){const s=document.createElement('span');s.className='item-farm';s.textContent=animals[j%animals.length];grid.appendChild(s);}
+const opts=new Set([cnt]);const pool=[0,1,2,3,4,5].filter(n=>n!==cnt);for(let i=0;i<4&&i<pool.length;i++)opts.add(pool[i]);const div=document.createElement('div');div.className='choices';area.appendChild(div);
+[...opts].sort(()=>Math.random()-0.5).forEach(n=>{const b=document.createElement('button');b.className='choice-btn';b.innerHTML='<span class="num">'+n+'</span>';b.onclick=()=>Game._judge(b,n===cnt);div.appendChild(b);});},
+_renderChoices(area,ans){const div=document.createElement('div');div.className='choices';area.appendChild(div);
+const opts=new Set([ans]);const pool=[0,1,2,3,4,5].filter(n=>n!==ans);for(let i=0;i<4&&i<pool.length;i++)opts.add(pool[i]);
+[...opts].sort(()=>Math.random()-0.5).forEach(n=>{const b=document.createElement('button');b.className='choice-btn';b.innerHTML='<span class="num">'+n+'</span>';b.onclick=()=>Game._judge(b,n===ans);div.appendChild(b);});},
 
 _render(){const rd=this.rounds[this.curIdx];if(!rd){this._finish();return;}Voice.stopAll();this._jumping=false;this.answered=false;document.getElementById('btnNext').style.display='none';
 const fb=document.getElementById('feedback');fb.textContent='';fb.className='feedback-text';
@@ -249,26 +239,21 @@ _highlightCorrect(rd,el){if(el.classList.contains('choice-btn')){document.queryS
 _showBtn(){const btn=document.getElementById('btnNext');btn.style.display='inline-block';btn.textContent=this.curIdx>=this.TOTAL-1?'看结果 🎉':'下一关 ➡️';},
 _clearTimer(){if(this._timer){clearTimeout(this._timer);this._timer=null;}},
 next(){this._jumping=true;this._clearTimer();this.curIdx++;if(this.curIdx>=this.TOTAL){this._finish();return;}this._render();},
-
 _finish(){_show('scResult');const pct=Math.round((this.score/this.TOTAL)*100);document.getElementById('resultScore').textContent=this.score+' / '+this.TOTAL;
-let msg,stars;if(pct===100){msg='满分通关！你是最棒的数学小天才！🎊🎊🎊 小鸡咕咕为你疯狂鼓掌！';stars=3;SFX.fanfare();this._confetti();}
-else if(pct>=70){msg='太厉害啦！你闯过了大部分关卡，再玩一次就能拿满分咯💪';stars=3;SFX.fanfare();}
-else if(pct>=40){msg='不错哦！你学会了好多本领，再来一次会更好！😊';stars=2;}
+let msg,stars;if(pct===100){msg='满分通关！小鸡咕咕为你疯狂鼓掌！🎊🎊🎊';stars=3;SFX.fanfare();this._confetti();}
+else if(pct>=70){msg='太厉害啦！再玩一次就能拿满分咯💪';stars=3;SFX.fanfare();}
+else if(pct>=40){msg='不错哦！再来一次会更好！😊';stars=2;}
 else{msg='没关系，咕咕陪你多练几次，下次一定更棒！🧸';stars=1;}
 document.getElementById('resultMsg').textContent=msg;
 const sc=document.getElementById('resultStars');sc.innerHTML='';for(let i=0;i<3;i++){const s=document.createElement('span');s.className='result-star';s.textContent=i<stars?'⭐':'☆';s.style.animationDelay=(i*0.15)+'s';if(i>=stars)s.style.opacity='0.3';sc.appendChild(s);}
 Voice.resultSpeak(pct);},
-
 _confetti(){const box=document.createElement('div');box.className='confetti-box';document.body.appendChild(box);const cs=['#ff6b6b','#4ecdc4','#45b7d1','#f9ca24','#ff9500','#a29bfe','#fd79a8'];for(let i=0;i<60;i++){const p=document.createElement('div');p.className='confetti-piece';p.style.left=Math.random()*100+'%';p.style.top='-10px';p.style.background=cs[i%cs.length];p.style.width=(Math.random()*6+4)+'px';p.style.height=(Math.random()*6+4)+'px';p.style.animationDuration=(Math.random()*2+2)+'s';p.style.animationDelay=(Math.random()*1.5)+'s';box.appendChild(p);}setTimeout(()=>box.remove(),6000);},
-
 _mascot(mood){const el=document.getElementById('mascotAv');if(!el)return;const map={normal:'mascot-chicken',happy:'mascot-chicken-happy',confused:'mascot-chicken-confused'};el.className='mascot-avatar '+(map[mood]||map.normal);},};
 
-/* 工具函数 */
 function _show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');}
 function _rand(min,max){return Math.floor(Math.random()*(max-min+1))+min;}
 function _disableAll(sel){document.querySelectorAll(sel).forEach(e=>e.classList.add('disabled'));}
 
-/* 启动 */
 window.onload=()=>{document.documentElement.setAttribute('data-sign','MathGame_Farm_20260614');Voice.init();};
 </script>
 </body>
