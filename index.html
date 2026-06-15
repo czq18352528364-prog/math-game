@@ -683,7 +683,7 @@ const Game = {
                 const cnt = (i%6)+3;
                 arr.push({type:'count',voice:'q_count',q:'🎈 数一数，有几个气球？',ans:cnt,
                     render(area){
-                        area.innerHTML = `<div style="font-size:20px;font-weight:bold;color:#555;">🎈 数一数，有几个气球？</div><div class="items-grid" id="itGrid"></div><div class="choices" id="itChoices"></div>`;
+                        area.innerHTML = `<div class="items-grid" id="itGrid"></div><div class="choices" id="itChoices"></div>`;
                         const grid=document.getElementById('itGrid');
                         const cs=['#ff6b6b','#4ecdc4','#45b7d1','#f9ca24','#ff9500','#a29bfe','#fd79a8','#00b894'];
                         for(let j=0;j<cnt;j++){const b=document.createElement('div');b.className='balloon';b.style.background=cs[j%cs.length];b.textContent='🎈';grid.appendChild(b);}
@@ -700,7 +700,7 @@ const Game = {
             return counts.map(cnt => ({
                 type:'count', voice:'q_count', q:'🎈 数一数，有几个气球？',
                 render(area) {
-                    area.innerHTML = `<div style="font-size:20px;font-weight:bold;color:#555;">🎈 数一数，有几个气球？</div><div class="items-grid" id="itGrid"></div><div class="choices" id="itChoices"></div>`;
+                    area.innerHTML = `<div class="items-grid" id="itGrid"></div><div class="choices" id="itChoices"></div>`;
                     const grid = document.getElementById('itGrid');
                     const cs = ['#ff6b6b','#4ecdc4','#45b7d1','#f9ca24','#ff9500','#a29bfe','#fd79a8','#00b894'];
                     for (let i=0;i<cnt;i++) { const b=document.createElement('div'); b.className='balloon'; b.style.background=cs[i%cs.length]; b.textContent='🎈'; grid.appendChild(b); }
@@ -718,7 +718,7 @@ const Game = {
                     type:'compare', voice:p.askFewer?'q_compare_fewer':'q_compare', q:p.askFewer?'⚖️ 哪边更少？点点少的那边':'⚖️ 哪边更多？点点多的那边',
                     correct: correct,
                     render(area) {
-                        area.innerHTML = `<div style="font-size:20px;font-weight:bold;color:#555;">${p.askFewer?'⚖️ 哪边更少？点一点👇':'⚖️ 哪边更多？点一点👇'}</div><div style="display:flex;flex-direction:row;gap:16px;justify-content:center;align-items:flex-start;"><div class="click-group" data-correct="${correct==='left'}" id="gL"><div style="display:flex;flex-wrap:wrap;gap:6px;justify-content:center;min-width:60px;" id="lGrid"></div><span class="hint">👈 左边</span></div><div style="font-size:36px;color:#ddd;align-self:center;">VS</div><div class="click-group" data-correct="${correct==='right'}" id="gR"><div style="display:flex;flex-wrap:wrap;gap:6px;justify-content:center;min-width:60px;" id="rGrid"></div><span class="hint">👉 右边</span></div></div>`;
+                        area.innerHTML = `<div style="display:flex;flex-direction:row;gap:16px;justify-content:center;align-items:flex-start;"><div class="click-group" data-correct="${correct==='left'}" id="gL"><div style="display:flex;flex-wrap:wrap;gap:6px;justify-content:center;min-width:60px;" id="lGrid"></div><span class="hint">👈 左边</span></div><div style="font-size:36px;color:#ddd;align-self:center;">VS</div><div class="click-group" data-correct="${correct==='right'}" id="gR"><div style="display:flex;flex-wrap:wrap;gap:6px;justify-content:center;min-width:60px;" id="rGrid"></div><span class="hint">👉 右边</span></div></div>`;
                         ['lGrid','rGrid'].forEach((id,i)=>{ const g=document.getElementById(id); const cnt=i===0?p.l:p.r; for(let j=0;j<cnt;j++){const s=document.createElement('span');s.style.fontSize='28px';s.style.margin='2px';s.textContent=['⭐','🌟','✨'][j%3];g.appendChild(s);}});
                         document.getElementById('gL').onclick=()=>Game._judgeDirect('gL',correct==='left');
                         document.getElementById('gR').onclick=()=>Game._judgeDirect('gR',correct==='right');
@@ -735,7 +735,7 @@ const Game = {
                     type:'length', voice:p.askLonger?'q_len_long':'q_len_short', q:p.askLonger?'📏 哪条更长？点一点':'📏 哪条更短？点一点',
                     ans:target, longer:p.longer,
                     render(area) {
-                        area.innerHTML = `<div style="font-size:20px;font-weight:bold;color:#555;">${p.askLonger?'📏 哪条更长？点一点👇':'📏 哪条更短？点一点👇'}</div><div style="display:flex;flex-direction:column;gap:16px;align-items:center;width:100%;padding:8px 0;"><div class="click-group" data-correct="${target==='top'}" id="gT" style="width:90%;"><div style="display:flex;align-items:center;gap:10px;"><span style="font-size:18px;">👆</span><div style="height:32px;border-radius:16px;background:linear-gradient(90deg,#87ceeb,#5ba3d9);width:${p.t}%;"></div></div><span class="hint">点这条 👆</span></div><div class="click-group" data-correct="${target==='bottom'}" id="gB" style="width:90%;"><div style="display:flex;align-items:center;gap:10px;"><span style="font-size:18px;">👇</span><div style="height:32px;border-radius:16px;background:linear-gradient(90deg,#ffb6c1,#ff7e9f);width:${p.b}%;"></div></div><span class="hint">点这条 👇</span></div></div>`;
+                        area.innerHTML = `<div style="display:flex;flex-direction:column;gap:16px;align-items:center;width:100%;padding:8px 0;"><div class="click-group" data-correct="${target==='top'}" id="gT" style="width:90%;"><div style="display:flex;align-items:center;gap:10px;"><span style="font-size:18px;">👆</span><div style="height:32px;border-radius:16px;background:linear-gradient(90deg,#87ceeb,#5ba3d9);width:${p.t}%;"></div></div><span class="hint">点这条 👆</span></div><div class="click-group" data-correct="${target==='bottom'}" id="gB" style="width:90%;"><div style="display:flex;align-items:center;gap:10px;"><span style="font-size:18px;">👇</span><div style="height:32px;border-radius:16px;background:linear-gradient(90deg,#ffb6c1,#ff7e9f);width:${p.b}%;"></div></div><span class="hint">点这条 👇</span></div></div>`;
                         document.getElementById('gT').onclick=()=>Game._judgeDirect('gT',target==='top');
                         document.getElementById('gB').onclick=()=>Game._judgeDirect('gB',target==='bottom');
                     },
@@ -747,7 +747,7 @@ const Game = {
             return qs.map(q => ({
                 type:'sort', voice:'q_sort', q:'📦 找出不一样的那个', items:q.items,
                 render(area) {
-                    area.innerHTML = `<div style="font-size:20px;font-weight:bold;color:#555;">📦 找出不一样的那个</div><div class="sort-grid" id="soGrid"></div>`;
+                    area.innerHTML = `<div class="sort-grid" id="soGrid"></div>`;
                     const g=document.getElementById('soGrid');
                     q.items.forEach((it,i)=>{const c=document.createElement('div');c.className='sort-card';c.textContent=it;c.dataset.idx=i;c.onclick=()=>Game._judge(c,i===q.ok);g.appendChild(c);});
                 }, ans:q.ok,
@@ -768,9 +768,9 @@ const Game = {
                 render(area) {
                     const isVert = q.pos==='top'||q.pos==='bottom';
                     if (isVert) {
-                        area.innerHTML = `<div style="font-size:20px;font-weight:bold;color:#555;">🔍 ${q.q}</div><div style="display:flex;flex-direction:column;gap:20px;align-items:center;padding:12px;"><div class="click-group" data-correct="${q.pos==='top'}" id="gA"><div style="font-size:64px;">${q.top}</div></div><div class="click-group" data-correct="${q.pos==='bottom'}" id="gB"><div style="font-size:64px;">${q.bottom}</div></div></div>`;
+                        area.innerHTML = `<div style="display:flex;flex-direction:column;gap:20px;align-items:center;padding:12px;"><div class="click-group" data-correct="${q.pos==='top'}" id="gA"><div style="font-size:64px;">${q.top}</div></div><div class="click-group" data-correct="${q.pos==='bottom'}" id="gB"><div style="font-size:64px;">${q.bottom}</div></div></div>`;
                     } else {
-                        area.innerHTML = `<div style="font-size:20px;font-weight:bold;color:#555;">🔍 ${q.q}</div><div style="display:flex;gap:24px;justify-content:center;align-items:center;padding:12px;"><div class="click-group" data-correct="${q.pos==='left'}" id="gA"><div style="font-size:64px;">${q.left}</div></div><div class="click-group" data-correct="${q.pos==='right'}" id="gB"><div style="font-size:64px;">${q.right}</div></div></div>`;
+                        area.innerHTML = `<div style="display:flex;gap:24px;justify-content:center;align-items:center;padding:12px;"><div class="click-group" data-correct="${q.pos==='left'}" id="gA"><div style="font-size:64px;">${q.left}</div></div><div class="click-group" data-correct="${q.pos==='right'}" id="gB"><div style="font-size:64px;">${q.right}</div></div></div>`;
                     }
                     document.getElementById('gA').onclick=()=>Game._judgeDirect('gA', (isVert?q.pos==='top':q.pos==='left'));
                     document.getElementById('gB').onclick=()=>Game._judgeDirect('gB', (isVert?q.pos==='bottom':q.pos==='right'));
