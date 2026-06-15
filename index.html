@@ -445,13 +445,16 @@ const Voice = {
         const n = Math.floor(Math.random() * 8) + 1;
         const txt = this._clips['p' + n] || '';
         const a = this._cache['p' + n];
-        if (a && a.duration > 0) {
+        if (a) {
             a.currentTime = 0;
             a.onended = () => { if (onDone) onDone(txt); };
-            a.play().catch(() => { if (onDone) setTimeout(() => onDone(txt), 500); });
+            a.play().then(() => {}).catch(() => {
+                // 手机端播放失败时改用浏览器 TTS 兜底
+                this.speak(txt);
+                if (onDone) setTimeout(() => onDone(txt), 1500);
+            });
         } else {
-            this.speak(txt);
-            if (onDone) setTimeout(() => onDone(txt), 1500);
+            if (onDone) setTimeout(() => onDone(txt), 500);
         }
     },
 
@@ -642,17 +645,23 @@ const Game = {
     // ========== 启动（播完欢迎语再进游戏，最多等5秒） ==========
     start() {
         this.score = 0; this.curIdx = 0; this._jumping = false;
-        // 构建题库：任何题型失败就全部替换成数数
+        // 解锁手机音频（iOS 需要用户手势触发的 AudioContext）
+        try {
+            SFX._getCtx(); // 创建 AudioContext
+            var silent = SFX._ctx.createOscillator();
+            silent.start(0); silent.stop(0.01);
+        } catch(e) {}
+        // 构建题库
         try { this._build(); } catch(e) { this.rounds = this._create.safeFallback(10); }
-        // 播欢迎语，播完等2秒
+        // 播欢迎语
         const go = () => { _show('scGame'); this._render(); };
         try {
             const a = Voice._cache['welcome'];
-            if (a) { a.currentTime = 0; a.onended = () => setTimeout(go, 2000); a.play().catch(() => setTimeout(go, 7000)); }
+            if (a) { a.currentTime = 0; a.play().then(() => setTimeout(go, 2000)).catch(() => setTimeout(go, 2000)); }
             else setTimeout(go, 1000);
         } catch(e) { setTimeout(go, 1000); }
-        // 安全兜底：8秒必进
-        setTimeout(() => { var w = document.getElementById('scWelcome'); if (w && w.className && w.className.indexOf('active')>=0) go(); }, 8000);
+        // 安全兜底：4秒必进
+        setTimeout(go, 4000);
     },
     home() { _show('scWelcome'); },
 
