@@ -185,16 +185,16 @@ const Game={
         const R=this._create;
         this.rounds = [
             {type:'add',voice:'q_add',q:'➕ 1 + 1 = ？',ans:2,render(area){
-                area.innerHTML='<div style="text-align:center;padding:12px;"><div class="math-display">1 + 1 = <span class="eq-big">？</span></div><div class="apple-row">🍎&nbsp;+&nbsp;🍎&nbsp;=&nbsp;🍎🍎</div></div>';Game._renderChoices(area,2);
+                area.innerHTML='<div style="text-align:center;padding:12px;"><div class="apple-row">🍎&nbsp;+&nbsp;🍎&nbsp;=&nbsp;？</div></div>';Game._renderChoices(area,2);
             }},
             {type:'sub',voice:'q_3sub2',q:'➖ 3 - 2 = ？',ans:1,render(area){
-                area.innerHTML='<div style="text-align:center;padding:12px;"><div class="math-display">3 - 2 = <span class="eq-big">？</span></div><div class="apple-row">🍎🍎🍎&nbsp;&minus;&nbsp;🍎🍎&nbsp;=&nbsp;🍎</div></div>';Game._renderChoices(area,1);
+                area.innerHTML='<div style="text-align:center;padding:12px;"><div class="apple-row">🍎🍎🍎&nbsp;&minus;&nbsp;🍎🍎&nbsp;=&nbsp;？</div></div>';Game._renderChoices(area,1);
             }},
             {type:'count',voice:'q_count',q:'🐑 数一数，农场里有多少动物？',ans:3,render(area){Game._renderGrid(area,3);}},
             {type:'num',voice:'q_num',q:'🔍 找一找，数字 4 在哪里？',ans:4,render(area){area.innerHTML='<div style="font-size:20px;font-weight:bold;color:#555;">🔍 找一找，数字 4 在哪里？</div>';Game._renderChoices(area,4);}},
             {type:'count',voice:'q_count',q:'🐑 数一数，农场里有多少动物？',ans:1,render(area){Game._renderGrid(area,1);}},
             {type:'sub',voice:'q_4sub3',q:'➖ 4 - 3 = ？',ans:1,render(area){
-                area.innerHTML='<div style="text-align:center;padding:12px;"><div class="math-display">4 - 3 = <span class="eq-big">？</span></div><div class="apple-row">🍎🍎🍎🍎&nbsp;&minus;&nbsp;🍎🍎🍎&nbsp;=&nbsp;🍎</div></div>';Game._renderChoices(area,1);
+                area.innerHTML='<div style="text-align:center;padding:12px;"><div class="apple-row">🍎🍎🍎🍎&nbsp;&minus;&nbsp;🍎🍎🍎&nbsp;=&nbsp;？</div></div>';Game._renderChoices(area,1);
             }},
             ...R.counting(1),...R.comparing(1),...R.adding(1),...R.numberId(1)
         ];
@@ -208,9 +208,9 @@ const Game={
         ['lGrid','rGrid'].forEach((id,i)=>{const g=document.getElementById(id);const cnt=i===0?p.l:p.r;for(let j=0;j<cnt;j++){const s=document.createElement('span');s.className='item-farm';s.textContent=animals[i];g.appendChild(s);}});
         document.getElementById('gL').onclick=()=>Game._judgeDirect('gL',correct==='left');document.getElementById('gR').onclick=()=>Game._judgeDirect('gR',correct==='right');},ans:correct,};});},
         adding(n){const qs=[];for(let i=0;i<n;i++){let a=_rand(1,4),b=_rand(1,4);while(a+b>5){a=_rand(1,4);b=_rand(1,4);}qs.push({a,b,sum:a+b});}
-        return qs.map(q=>({type:'add',voice:'q_add',q:'➕ '+q.a+' + '+q.b+' = ？',ans:q.sum,render(area){const emoji='🍎'.repeat(q.a);const emoji2='🍎'.repeat(q.b);const eq='🍎'.repeat(q.sum);area.innerHTML='<div style="text-align:center;padding:12px;"><div class="math-display">'+q.a+' + '+q.b+' = <span class="eq-big">？</span></div><div class="apple-row">'+emoji+' + '+emoji2+' = '+eq+'</div></div>';Game._renderChoices(area,q.sum);},ans:q.sum}));},
+        return qs.map(q=>({type:'add',voice:'q_add',q:'➕ '+q.a+' + '+q.b+' = ？',ans:q.sum,render(area){const emoji='🍎'.repeat(q.a);const emoji2='🍎'.repeat(q.b);area.innerHTML='<div style="text-align:center;padding:12px;"><div class="apple-row">'+emoji+' + '+emoji2+' = ？</div></div>';Game._renderChoices(area,q.sum);},ans:q.sum}));},
         subtracting(n){const qs=[];for(let i=0;i<n;i++){let a=_rand(2,5),b=_rand(1,a);qs.push({a,b,res:a-b});}
-        return qs.map(q=>({type:'sub',voice:'q_sub',q:'➖ '+q.a+' - '+q.b+' = ？',ans:q.res,render(area){const emoji='🍎'.repeat(q.a);const cut='🍎'.repeat(q.b);const keep='🍎'.repeat(q.res);area.innerHTML='<div style="text-align:center;padding:12px;"><div class="math-display">'+q.a+' - '+q.b+' = <span class="eq-big">？</span></div><div class="apple-row">'+emoji+' &minus; '+cut+' = '+keep+'</div></div>';Game._renderChoices(area,q.res);},ans:q.res}));},
+        return qs.map(q=>({type:'sub',voice:'q_sub',q:'➖ '+q.a+' - '+q.b+' = ？',ans:q.res,render(area){const emoji='🍎'.repeat(q.a);const cut='🍎'.repeat(q.b);area.innerHTML='<div style="text-align:center;padding:12px;"><div class="apple-row">'+emoji+' &minus; '+cut+' = ？</div></div>';Game._renderChoices(area,q.res);},ans:q.res}));},
         numberId(n){const nums=[0,1,2,3,4,5].sort(()=>Math.random()-0.5).slice(0,n);return nums.map(target=>({type:'num',voice:'q_num',q:'🔍 找一找，数字 '+target+' 在哪里？',ans:target,render(area){area.innerHTML='<div style="font-size:20px;font-weight:bold;color:#555;">🔍 找一找，数字 '+target+' 在哪里？</div>';Game._renderChoices(area,target);},ans:target}));},
     },
     _renderGrid(area,cnt){area.innerHTML='<div class="items-grid" id="fgrid"></div>';const grid=document.getElementById('fgrid');const animals=['🐑','🐥','🐤','🐄','🐖','🐇'];for(let j=0;j<cnt;j++){const s=document.createElement('span');s.className='item-farm';s.textContent=animals[j%animals.length];grid.appendChild(s);}
